@@ -13,19 +13,22 @@ PWD:=$(shell pwd)
 
 all: clean
 	mkdir --parents $(PWD)/build/Boilerplate.AppDir
-
-	wget --output-document=$(PWD)/build/build.deb http://ppa.launchpad.net/audio-recorder/ppa/ubuntu/pool/main/a/audio-recorder/audio-recorder_3.2.3~hirsute_amd64.deb
-	dpkg -x $(PWD)/build/build.deb $(PWD)/build
-
-	cp --force --recursive $(PWD)/build/usr/* $(PWD)/build/Boilerplate.AppDir
-
-	apprepo --destination=$(PWD)/build appdir boilerplate libatk1.0-0 libatk-bridge2.0-0 libgtk2.0-0 breeze-gtk-theme
-
+	apprepo --destination=$(PWD)/build appdir boilerplate kwave
 
 	echo '' 																				>> $(PWD)/build/Boilerplate.AppDir/AppRun
 	echo '' 																				>> $(PWD)/build/Boilerplate.AppDir/AppRun
-	echo 'exec $${APPDIR}/bin/audio-recorder $${@}' >> $(PWD)/build/Boilerplate.AppDir/AppRun
+	echo 'exec $${APPDIR}/bin/kwave $${@}' 					>> $(PWD)/build/Boilerplate.AppDir/AppRun
 
+	rm --force $(PWD)/build/Boilerplate.AppDir/*.desktop  || true
+	rm --force $(PWD)/build/Boilerplate.AppDir/*.png      || true
+	rm --force $(PWD)/build/Boilerplate.AppDir/*.svg      || true
+
+	cp --force $(PWD)/AppDir/*.desktop        $(PWD)/build/Boilerplate.AppDir/ || true
+	cp --force $(PWD)/AppDir/*.png            $(PWD)/build/Boilerplate.AppDir/ || true
+	cp --force $(PWD)/AppDir/*.svg            $(PWD)/build/Boilerplate.AppDir/ || true
+
+	export ARCH=x86_64 && $(PWD)/bin/appimagetool.AppImage $(PWD)/build/Boilerplate.AppDir/ $(PWD)/KWave.AppImage
+	chmod +x $(PWD)/KWave.AppImage
 
 clean:
 	rm -rf $(PWD)/build
